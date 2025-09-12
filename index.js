@@ -1,16 +1,23 @@
 const express = require('express');
-const { initProductTable, seedProducts } = require('./models/productModel');
+const { initProductsTable, seedProducts } = require('./models/productModel');
+const {
+  initOrderTables,
+  seedDefaultUser,
+} = require('./models/orderModels');
 const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 app.use(express.json());
 
 app.use('/products', productRoutes);
+app.use('/orders', orderRoutes);
 
-// Initialize DB and seed predefined products
 (async () => {
-  await initProductTable();
+  await initProductsTable();
   await seedProducts();
+  await initOrderTables();
+  await seedDefaultUser();
 })();
 
 const PORT = process.env.PORT || 3000;
