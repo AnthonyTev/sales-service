@@ -4,7 +4,7 @@ async function initProductsTable() {
   await pool.query(`
         CREATE TABLE IF NOT EXISTS products (
             id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
+            name VARCHAR(100) NOT NULL UNIQUE,
             unit_price NUMERIC(10, 2) NOT NULL,
             qty INT NOT NULL,
             status VARCHAR(20) NOT NULL
