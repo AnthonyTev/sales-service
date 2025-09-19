@@ -1,24 +1,28 @@
-const express = require('express');
-const { initProductsTable, seedProducts } = require('./models/productModel');
-const {
-  initOrderTables,
-  seedDefaultUser,
-} = require('./models/orderModels');
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes');
+// index.js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import productRoutes from "./routes/productRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 app.use(express.json());
 
-app.use('/products', productRoutes);
-app.use('/orders', orderRoutes);
+// ES module fix for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-(async () => {
-  await initProductsTable();
-  await seedProducts();
-  await initOrderTables();
-  await seedDefaultUser();
-})();
+// Routes
+app.use("/products", productRoutes);
+app.use("/cart", cartRoutes);
+app.use("/auth", authRoutes);
+
+// Serve static frontend from /public
+app.use(express.static(path.join(__dirname, "public")));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Sales Service running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`✅ Sales Service running on http://localhost:${PORT}`)
+);

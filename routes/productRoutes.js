@@ -1,37 +1,25 @@
-const express = require("express");
-const pool = require("../db");
+import express from "express";
+
 const router = express.Router();
 
+let products = [
+  { id: 1, name: "Notebook", unitPrice: 50, qty: 100, status: "available" },
+  { id: 2, name: "Ballpen", unitPrice: 10, qty: 200, status: "available" },
+  { id: 3, name: "Eraser", unitPrice: 5, qty: 150, status: "available" }
+];
+
 // GET /products
-router.get("/", async (req, res) => {
-  try {
-    const { rows } = await pool.query("SELECT * FROM products ORDER BY id");
-    res.json(rows);
-  } catch (err) {
-    console.error("GET /products failed:", err);
-    res.status(500).json({ error: "Failed to fetch products" });
-  }
+router.get("/", (req, res) => {
+  res.json(products);
 });
 
 // POST /products
-router.post("/", async (req, res) => {
-  try {
-    const { name, unit_price, qty, status } = req.body;
-    const { rows } = await pool.query(
-      `INSERT INTO products (name, unit_price, qty, status)
-       VALUES ($1,$2,$3,$4)
-       ON CONFLICT (name) DO NOTHING
-       RETURNING *`,
-      [name, unit_price, qty, status]
-    );
-    if (rows.length === 0) {
-      return res.status(409).json({ error: "Product already exists" });
-    }
-    res.status(201).json(rows[0]);
-  } catch (err) {
-    console.error("POST /products failed:", err);
-    res.status(500).json({ error: "Failed to add product" });
-  }
+router.post("/", (req, res) => {
+  const { name, unitPrice, qty, status } = req.body;
+  const id = products.length + 1;
+  const newProduct = { id, name, unitPrice, qty, status };
+  products.push(newProduct);
+  res.status(201).json(newProduct);
 });
 
-module.exports = productRoutes;
+export default router;
